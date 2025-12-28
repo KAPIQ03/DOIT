@@ -1,0 +1,60 @@
+version: '3.8'
+
+services:
+  # 1. Baza Danych (PostgreSQL)
+  db:
+    image: postgres:15
+    container_name: doit_db
+    environment:
+      POSTGRES_DB: doit_db
+      POSTGRES_USER: doit_user
+      POSTGRES_PASSWORD: secret_password
+    volumes:
+      - doit_pgdata:/var/lib/postgresql/data 
+    ports:
+      - '5432:5432'
+    networks:
+      - app_network
+
+  # 2. Backend API (Laravel)
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: doit_api
+    volumes:
+      - ./backend:/var/www 
+    ports:
+      - '8000:8000'
+    depends_on:
+      - db
+    environment:
+      DB_HOST: db 
+      DB_PORT: 5432
+      DB_DATABASE: doit_db
+      DB_USERNAME: doit_user
+      DB_PASSWORD: secret_password
+    networks:
+      - app_network
+
+  # 3. Frontend (Next.js)
+  frontend:
+    image: node:20-alpine
+    container_name: doit_frontend
+    working_dir: /app
+    volumes:
+      - ./frontend:/app 
+      - /app/node_modules 
+    command: npm run dev
+    ports:
+      - '3000:3000'
+    environment:
+      - WATCHPACK_POLLING=true 
+    networks:
+      - app_network
+
+volumes:
+  doit_pgdata:
+
+networks:
+  app_network:
