@@ -1,0 +1,17 @@
+# Systemowe
+.DS_Store
+Thumbs.db
+
+# IDE (IntelliJ, VS Code)
+.idea/
+*.iml
+.vscode/
+*.sublime-workspace
+
+# Ogólne
+*.log
+tmp/
+temp/
+
+# zmienne lokalne
+.env
