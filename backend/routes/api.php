@@ -24,6 +24,9 @@ Route::group(['middleware' => ['auth:sanctum']], function() {
 
     //Task API routes
     Route::apiResource('tasks', TaskController::class);
+
+    //dailyLog API routes
+    Route::get('/daily-logs', [App\Http\Controllers\DailyLogController::class, 'index']);
 });
 
 
