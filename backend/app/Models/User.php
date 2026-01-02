@@ -59,4 +59,8 @@ class User extends Authenticatable
     {
         return $this->hasMany(DailyLog::class);
     }
+    public function tasks()
+    {
+        return $this->hasManyThrough(Task::class, Project::class);
+    }
 }
