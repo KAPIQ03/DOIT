@@ -94,11 +94,11 @@ export default function ProjectsGoalsPage() {
                 value={newGoalTitle}
                 onChange={(e) => setNewGoalTitle(e.target.value)}
                 placeholder="Nowy cel..."
-                className="flex-1 border-gray-300 rounded-md shadow-sm focus:border-red-500 focus:ring-red-500 sm:text-sm"
+                className="flex-1 border-gray-300 rounded shadow-sm focus:border-red-500 focus:ring-red-500 text-base px-3 py-2 text-gray-900 placeholder-gray-500"
               />
               <button
                 onClick={handleAddGoal}
-                className="inline-flex items-center p-2 border border-transparent rounded-md shadow-sm text-white bg-red-600 hover:bg-red-700 focus:outline-none"
+                className="inline-flex items-center p-2 border border-transparent rounded shadow-sm text-white bg-red-600 hover:bg-red-700 focus:outline-none"
               >
                 <Plus className="w-5 h-5" />
               </button>
@@ -133,13 +133,13 @@ export default function ProjectsGoalsPage() {
                 value={newProjectTitle}
                 onChange={(e) => setNewProjectTitle(e.target.value)}
                 placeholder="Nowy projekt..."
-                className="w-full border-gray-300 rounded-md shadow-sm focus:border-red-500 focus:ring-red-500 sm:text-sm"
+                className="w-full border-gray-300 rounded shadow-sm focus:border-red-500 focus:ring-red-500 text-base px-3 py-2 text-gray-900 placeholder-gray-500"
               />
               <div className="flex space-x-2">
                 <select
                   value={selectedGoalId}
-                  onChange={(e) => setSelectedGoalId(e.target.value)}
-                  className="flex-1 border-gray-300 rounded-md shadow-sm focus:border-red-500 focus:ring-red-500 sm:text-sm"
+                  onChange={(e) => setSelectedGoalId(e.target.value === '' ? '' : Number(e.target.value))}
+                  className="flex-1 border-gray-300 rounded shadow-sm focus:border-red-500 focus:ring-red-500 text-base px-3 py-2 text-gray-900"
                 >
                   <option value="">-- Przypisz do celu (opcjonalne) --</option>
                   {goals.map(g => (
@@ -148,7 +148,7 @@ export default function ProjectsGoalsPage() {
                 </select>
                 <button
                   onClick={handleAddProject}
-                  className="inline-flex items-center p-2 border border-transparent rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none"
+                  className="inline-flex items-center p-2 border border-transparent rounded shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none"
                 >
                   <Plus className="w-5 h-5" />
                 </button>
