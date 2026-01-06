@@ -1,11 +1,10 @@
-// frontend/components/layout/Navbar.tsx
-'use client'; // Ten komponent musi być Client Component
+'use client'; 
 import Link from 'next/link';
 import { LayoutDashboard, Sun, Target, LogOut, User as UserIcon } from 'lucide-react';
-import { useAuth } from '@/hooks/auth'; // Importujemy useAuth
+import { useAuth } from '@/hooks/auth'; 
 
 export default function Navbar() {
-  const { user, logout } = useAuth(); // Pobieramy usera i logout
+  const { user, logout } = useAuth(); 
   
   const navItems = [
     { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
@@ -17,7 +16,6 @@ export default function Navbar() {
     <nav className="border-b border-gray-200 bg-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16">
-          {/* Lewa strona - Logo i Linki */}
           <div className="flex">
             <div className="flex-shrink-0 flex items-center">
               <span className="text-2xl font-bold text-red-600">Doit</span>
@@ -36,16 +34,15 @@ export default function Navbar() {
             </div>
           </div>
 
-          {/* Prawa strona - Użytkownik i Wyloguj */}
           <div className="flex items-center space-x-4">
-            {user && ( // Wyświetlaj nazwę użytkownika, jeśli zalogowany
+            {user && ( 
                 <div className="flex items-center text-sm font-medium text-gray-700">
                     <UserIcon className="w-4 h-4 mr-1" />
                     {user.name}
                 </div>
             )}
             <button
-              onClick={logout} // Wywołaj funkcję logout
+              onClick={logout} 
               className="p-2 rounded-md text-gray-400 hover:text-gray-500 focus:outline-none"
             >
               <LogOut className="w-6 h-6" />

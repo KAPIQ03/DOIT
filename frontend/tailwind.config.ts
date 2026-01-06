@@ -1,4 +1,3 @@
-// frontend/tailwind.config.ts
 import type { Config } from 'tailwindcss';
 
 const config: Config = {
@@ -17,7 +16,7 @@ const config: Config = {
     },
   },
   plugins: [
-    require('@tailwindcss/forms'), // Dodajemy wtyczkę forms
+    require('@tailwindcss/forms'),
   ],
 };
 export default config;

@@ -1,4 +1,3 @@
-// frontend/lib/axios.ts
 import axios from 'axios';
 
 const axiosClient = axios.create({
@@ -10,7 +9,6 @@ const axiosClient = axios.create({
     },
 });
 
-// Interceptor: Dodaj token do każdego żądania, jeśli istnieje
 axiosClient.interceptors.request.use((config) => {
     const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
     if (token) {

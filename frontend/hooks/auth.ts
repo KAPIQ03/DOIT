@@ -1,4 +1,3 @@
-// frontend/hooks/auth.ts
 import useSWR from 'swr';
 import axios from '@/lib/axios';
 import { useEffect } from 'react';
@@ -7,12 +6,10 @@ import { useRouter } from 'next/navigation';
 export const useAuth = ({ middleware, redirectIfAuthenticated }: { middleware?: 'auth' | 'guest', redirectIfAuthenticated?: string } = {}) => {
     const router = useRouter();
 
-    // Pobieranie użytkownika (działa tylko jeśli mamy token w localStorage)
     const { data: user, error, mutate } = useSWR('/api/user', () =>
         axios.get('/api/user')
             .then(res => res.data)
             .catch(error => {
-                // Jeśli 401, SWR zwróci błąd, co obsłużymy w useEffect
                 throw error;
             }),
         {
@@ -22,7 +19,7 @@ export const useAuth = ({ middleware, redirectIfAuthenticated }: { middleware?: 
 
     const setToken = (token: string) => {
         localStorage.setItem('token', token);
-        mutate(); // Odśwież SWR (pobierz usera używając nowego tokena)
+        mutate();
     };
 
     const register = async ({ setErrors, ...props }: any) => {
@@ -30,7 +27,6 @@ export const useAuth = ({ middleware, redirectIfAuthenticated }: { middleware?: 
         axios
             .post('/api/register', props)
             .then((res) => {
-                // Backend zwraca { user, token }
                 setToken(res.data.token); 
             })
             .catch(error => {
@@ -45,7 +41,6 @@ export const useAuth = ({ middleware, redirectIfAuthenticated }: { middleware?: 
         axios
             .post('/api/login', props)
             .then((res) => {
-                // Backend zwraca { user, token }
                 setToken(res.data.token);
             })
             .catch(error => {
@@ -55,15 +50,13 @@ export const useAuth = ({ middleware, redirectIfAuthenticated }: { middleware?: 
     };
 
     const logout = async () => {
-        // Opcjonalnie: wołamy backend, żeby unieważnił token
         try {
              await axios.post('/api/logout');
         } catch (e) {
-            // Ignorujemy błąd wylogowania
         }
         
         localStorage.removeItem('token');
-        mutate(null, false); // Wyczyść dane usera w SWR
+        mutate(null, false);
         window.location.pathname = '/login';
     };
 
