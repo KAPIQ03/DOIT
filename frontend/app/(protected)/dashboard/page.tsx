@@ -3,25 +3,30 @@ import { useAuth } from '@/hooks/auth';
 import { useState, useEffect } from 'react';
 import { taskService, Task } from '@/services/taskService';
 import { projectService, Project } from '@/services/projectService';
+import { goalService, Goal } from '@/services/goalService';
+import Link from 'next/link';
 
 export default function DashboardPage() {
   const { user } = useAuth({ middleware: 'auth' });
   
   const [tasks, setTasks] = useState<Task[]>([]);
   const [projects, setProjects] = useState<Project[]>([]);
+  const [goals, setGoals] = useState<Goal[]>([]);
   const [newTaskTitle, setNewTaskTitle] = useState('');
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [fetchedTasks, fetchedProjects] = await Promise.all([
+        const [fetchedTasks, fetchedProjects, fetchedGoals] = await Promise.all([
           taskService.getAllTasks(),
-          projectService.getAllProjects()
+          projectService.getAllProjects(),
+          goalService.getAllGoals()
         ]);
 
         setTasks(fetchedTasks);
         setProjects(fetchedProjects);
+        setGoals(fetchedGoals);
 
         if (fetchedProjects.length === 0) {
            const inbox = await projectService.createProject('Inbox');
@@ -72,7 +77,9 @@ export default function DashboardPage() {
       </h1>
       
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+        {/* Lewa Kolumna */}
         <div className="space-y-6">
+          {/* Sekcja My Day */}
           <div className="bg-white shadow rounded-lg p-6">
             <h2 className="text-lg font-medium text-gray-900 mb-4">My Day</h2>
             
@@ -118,16 +125,46 @@ export default function DashboardPage() {
             )}
           </div>
 
+          {/* Sekcja Goals */}
           <div className="bg-white shadow rounded-lg p-6">
-            <h2 className="text-lg font-medium text-gray-900 mb-4">Goals (Placeholder)</h2>
-            <div className="text-sm text-gray-500">Integracja w kolejnej turze...</div>
+            <h2 className="text-lg font-medium text-gray-900 mb-4">Goals</h2>
+            {isLoading ? <p className="text-sm text-gray-500">Ładowanie...</p> : (
+              goals.length > 0 ? (
+                 <div className="grid grid-cols-2 gap-4">
+                  {goals.slice(0, 4).map((goal) => (
+                    <div key={goal.id} className="border border-gray-200 rounded p-4 flex flex-col items-center justify-center bg-gray-50">
+                      <div className="font-medium text-gray-800 text-center">{goal.title}</div>
+                    </div>
+                  ))}
+                </div>
+              ) : <p className="text-sm text-gray-500">Brak celów.</p>
+            )}
+             <Link href="/projects-goals" className="mt-4 block w-full text-center py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
+                Zarządzaj celami
+              </Link>
           </div>
+          
+           {/* Sekcja Projects */}
            <div className="bg-white shadow rounded-lg p-6">
-            <h2 className="text-lg font-medium text-gray-900 mb-4">Projects (Placeholder)</h2>
-             <div className="text-sm text-gray-500">Integracja w kolejnej turze...</div>
+            <h2 className="text-lg font-medium text-gray-900 mb-4">Projects</h2>
+             {isLoading ? <p className="text-sm text-gray-500">Ładowanie...</p> : (
+               projects.length > 0 ? (
+                <div className="grid grid-cols-2 gap-4">
+                  {projects.slice(0, 4).map((project) => (
+                    <div key={project.id} className="border border-gray-200 rounded p-4 flex flex-col items-center justify-center bg-gray-50">
+                      <div className="font-medium text-gray-800 text-center">{project.name}</div>
+                    </div>
+                  ))}
+                </div>
+               ) : <p className="text-sm text-gray-500">Brak projektów.</p>
+             )}
+            <Link href="/projects-goals" className="mt-4 block w-full text-center py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
+                Zarządzaj projektami
+              </Link>
           </div>
         </div>
 
+        {/* Prawa Kolumna - Statystyki */}
         <div className="space-y-6">
            <div className="bg-white shadow rounded-lg p-6">
             <h2 className="text-lg font-medium text-gray-900 mb-4">Statistics</h2>

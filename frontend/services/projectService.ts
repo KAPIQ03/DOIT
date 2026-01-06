@@ -18,5 +18,9 @@ export const projectService = {
         
         const response = await axios.post('/api/projects', payload);
         return response.data.data || response.data;
+    },
+
+    deleteProject: async (id: number) => {
+        await axios.delete(`/api/projects/${id}`);
     }
 };
