@@ -6,6 +6,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\GoalController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\TaskController;
+use App\Http\Controllers\DailyLogController;
 
 //Public routes
 Route::post('/register', [AuthController::class, 'register']);
@@ -26,7 +27,5 @@ Route::group(['middleware' => ['auth:sanctum']], function() {
     Route::apiResource('tasks', TaskController::class);
 
     //dailyLog API routes
-    Route::get('/daily-logs', [App\Http\Controllers\DailyLogController::class, 'index']);
+    Route::get('/daily-logs', [DailyLogController::class, 'index']);
 });
-
-
