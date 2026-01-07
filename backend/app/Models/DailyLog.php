@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 class DailyLog extends Model
 {
     use HasFactory;
-    protected $fillable = [ 'log_date','completed_counts','user_id'];
+    protected $fillable = [ 'log_date','completed_count','user_id'];
     protected $casts = [
         'log_date' => 'date',
     ];
