@@ -76,8 +76,6 @@ export default function DashboardPage() {
 						dailyLogService.getAllLogs(),
 					]);
 
-				console.log('Pobrane logi aktywności:', fetchedLogs); // DEBUG
-
 				setTasks(fetchedTasks);
 				setProjects(fetchedProjects);
 				setGoals(fetchedGoals);
@@ -136,7 +134,6 @@ export default function DashboardPage() {
 				is_completed: updatedTask.is_completed,
 			});
 			const logs = await dailyLogService.getAllLogs();
-			console.log('Odświeżone logi po zmianie:', logs); // DEBUG
 			setDailyLogs(logs);
 		} catch (error) {
 			console.error('Błąd aktualizacji zadania:', error);
@@ -144,10 +141,8 @@ export default function DashboardPage() {
 		}
 	};
 
-	// Kalendarz - dane
 	const calendarData = useMemo(() => {
 		const data = dailyLogs.map(log => {
-			// Normalizacja daty do formatu YYYY-MM-DD
 			const dateStr = String(log.log_date).split('T')[0];
 			return {
 				date: dateStr,
@@ -155,8 +150,6 @@ export default function DashboardPage() {
 				level: Math.min(Math.max(Number(log.completed_count), 0), 4),
 			};
 		});
-
-		// Upewnij się, że dzisiejszy dzień jest na liście (nawet pusty), żeby kalendarz pokazał "dziś"
 		const todayStr = format(new Date(), 'yyyy-MM-dd');
 		if (!data.find(d => d.date === todayStr)) {
 			data.push({ date: todayStr, count: 0, level: 0 });
@@ -164,12 +157,10 @@ export default function DashboardPage() {
 		return data;
 	}, [dailyLogs]);
 
-	// Wykres - dane
 	const chartData = useMemo(() => {
 		return Array.from({ length: 7 }, (_, i) => {
 			const d = subDays(new Date(), 6 - i);
 			const dateStr = format(d, 'yyyy-MM-dd');
-			// Znajdź log używając znormalizowanej daty (pierwsze 10 znaków)
 			const log = dailyLogs.find(
 				l => String(l.log_date).split('T')[0] === dateStr
 			);
@@ -191,7 +182,7 @@ export default function DashboardPage() {
 			<div className='grid grid-cols-1 gap-6 lg:grid-cols-2'>
 				<div className='space-y-6'>
 					<div className='bg-white shadow rounded-lg p-6'>
-						<h2 className='text-lg font-medium text-gray-900 mb-4'>My Day</h2>
+						<h2 className='text-lg text-gray-900 mb-4 font-bold'>Mój Dzień</h2>
 
 						{isLoading ? (
 							<div className='text-gray-500 text-sm'>Ładowanie zadań...</div>
@@ -259,16 +250,16 @@ export default function DashboardPage() {
 					</div>
 
 					<div className='bg-white shadow rounded-lg p-6'>
-						<h2 className='text-lg font-medium text-gray-900 mb-4'>Goals</h2>
+						<h2 className='text-lg font-bold text-gray-900 mb-4'>Cele</h2>
 						{isLoading ? (
 							<p className='text-sm text-gray-500'>Ładowanie...</p>
 						) : goals.length > 0 ? (
-							<div className='grid grid-cols-2 gap-4'>
+							<div className='grid grid-cols-3 gap-4'>
 								{goals.slice(0, 4).map(goal => (
 									<div
 										key={goal.id}
-										className='border border-gray-200 rounded p-4 flex flex-col items-center justify-center bg-gray-50'>
-										<div className='font-medium text-gray-800 text-center'>
+										className='border-2 border-gray-300 rounded p-4 flex flex-col items-center justify-center bg-gray-50'>
+										<div className='font-bold text-gray-600 text-center'>
 											{goal.title}
 										</div>
 									</div>
@@ -285,20 +276,23 @@ export default function DashboardPage() {
 					</div>
 
 					<div className='bg-white shadow rounded-lg p-6'>
-						<h2 className='text-lg font-medium text-gray-900 mb-4'>Projects</h2>
+						<h2 className='text-lg font-bold text-gray-900 mb-4'>Projekty</h2>
 						{isLoading ? (
 							<p className='text-sm text-gray-500'>Ładowanie...</p>
-						) : projects.length > 0 ? (
-							<div className='grid grid-cols-2 gap-4'>
-								{projects.slice(0, 4).map(project => (
-									<div
-										key={project.id}
-										className='border border-gray-200 rounded p-4 flex flex-col items-center justify-center bg-gray-50'>
-										<div className='font-medium text-gray-800 text-center'>
-											{project.name}
+						) : projects.filter(p => p.name !== 'Inbox').length > 0 ? (
+							<div className='grid grid-cols-3 gap-4'>
+								{projects
+									.filter(p => p.name !== 'Inbox')
+									.slice(0, 4)
+									.map(project => (
+										<div
+											key={project.id}
+											className='border-2 border-gray-300 rounded p-4 flex flex-col items-center justify-center bg-gray-50'>
+											<div className='font-bold text-gray-600 text-center'>
+												{project.name}
+											</div>
 										</div>
-									</div>
-								))}
+									))}
 							</div>
 						) : (
 							<p className='text-sm text-gray-500'>Brak projektów.</p>
@@ -313,11 +307,8 @@ export default function DashboardPage() {
 
 				<div className='space-y-6'>
 					<div className='bg-white shadow rounded-lg p-6'>
-						<h2 className='text-lg font-medium text-gray-900 mb-4'>
-							Statistics
-						</h2>
+						<h2 className='text-lg font-bold text-gray-900 mb-4'>Statystyki</h2>
 
-						{/* Kalendarz Aktywności */}
 						<div className='mb-8'>
 							<h3 className='text-sm font-medium text-gray-500 mb-2'>
 								Aktywność ({new Date().getFullYear()})
@@ -370,7 +361,6 @@ export default function DashboardPage() {
 							</div>
 						</div>
 
-						{/* Wykres Liniowy */}
 						<div>
 							<h3 className='text-sm font-medium text-gray-500 mb-2'>
 								Ostatnie 7 dni
