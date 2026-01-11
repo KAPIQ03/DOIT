@@ -5,6 +5,7 @@ export interface Task {
     title: string;
     is_completed: boolean;
     project_id: number;
+    updated_at: string;
 }
 
 export const taskService = {

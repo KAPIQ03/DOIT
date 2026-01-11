@@ -1,5 +1,6 @@
 'use client';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import {
 	LayoutDashboard,
 	LayoutList,
@@ -12,6 +13,7 @@ import Image from 'next/image';
 
 export default function Navbar() {
 	const { user, logout } = useAuth();
+	const pathname = usePathname();
 
 	const navItems = [
 		{ name: 'Panel Główny', href: '/dashboard', icon: LayoutDashboard },
@@ -25,18 +27,36 @@ export default function Navbar() {
 				<div className='flex justify-between h-16'>
 					<div className='flex'>
 						<div className='shrink-0 flex items-center'>
-							<Image src='DOIT.svg' alt='Doit Logo' width={120} height={30} />
+							<Link href='/dashboard'>
+								<Image
+									src='DOIT.svg'
+									alt='Doit Logo'
+									width={100}
+									height={100}
+								/>
+							</Link>
 						</div>
 						<div className='hidden sm:ml-6 sm:flex sm:space-x-8'>
-							{navItems.map(item => (
-								<Link
-									key={item.href}
-									href={item.href}
-									className='inline-flex items-center px-1 pt-1 border-b-2 border-transparent text-sm font-medium text-gray-500 hover:text-gray-900 hover:border-gray-300'>
-									<item.icon className='w-4 h-4 mr-2' />
-									{item.name}
-								</Link>
-							))}
+							{navItems.map(item => {
+								const isActive = pathname === item.href;
+								return (
+									<Link
+										key={item.href}
+										href={item.href}
+										className={`inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium ${
+											isActive
+												? 'border-red-500 text-gray-900'
+												: 'border-transparent text-gray-500 hover:text-gray-900 hover:border-gray-300'
+										}`}>
+										<item.icon
+											className={`w-4 h-4 mr-2 ${
+												isActive ? 'text-red-500' : 'text-gray-400'
+											}`}
+										/>
+										{item.name}
+									</Link>
+								);
+							})}
 						</div>
 					</div>
 

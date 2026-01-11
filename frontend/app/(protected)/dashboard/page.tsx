@@ -16,8 +16,16 @@ import {
 	Tooltip,
 	ResponsiveContainer,
 } from 'recharts';
-import { subDays, format, startOfYear, endOfYear } from 'date-fns';
+import {
+	subDays,
+	format,
+	startOfYear,
+	endOfYear,
+	isSameDay,
+	parseISO,
+} from 'date-fns';
 import { eachDayOfInterval } from 'date-fns/eachDayOfInterval';
+import { Trash2 } from 'lucide-react';
 
 let inboxCreationPromise: Promise<Project> | null = null;
 
@@ -126,7 +134,11 @@ export default function DashboardPage() {
 	};
 
 	const toggleTaskCompletion = async (task: Task) => {
-		const updatedTask = { ...task, is_completed: !task.is_completed };
+		const updatedTask = {
+			...task,
+			is_completed: !task.is_completed,
+			updated_at: new Date().toISOString(),
+		};
 		setTasks(tasks.map(t => (t.id === task.id ? updatedTask : t)));
 
 		try {
@@ -140,6 +152,25 @@ export default function DashboardPage() {
 			setTasks(tasks.map(t => (t.id === task.id ? task : t)));
 		}
 	};
+
+	const handleDeleteTask = async (taskId: number) => {
+		if (!confirm('Czy na pewno chcesz usunąć to zadanie?')) return;
+		try {
+			await taskService.deleteTask(taskId);
+			setTasks(tasks.filter(t => t.id !== taskId));
+		} catch (error) {
+			console.error('Błąd usuwania zadania:', error);
+			alert('Nie udało się usunąć zadania.');
+		}
+	};
+
+	const visibleTasks = useMemo(() => {
+		const today = new Date();
+		return tasks.filter(task => {
+			if (!task.is_completed) return true;
+			return isSameDay(parseISO(task.updated_at), today);
+		});
+	}, [tasks]);
 
 	const calendarData = useMemo(() => {
 		const data = dailyLogs.map(log => {
@@ -175,42 +206,58 @@ export default function DashboardPage() {
 
 	return (
 		<div className='space-y-6'>
-			<h1 className='text-2xl font-bold text-gray-900'>
+			<h1 className='ml-2 md:ml-0 text-2xl font-bold text-gray-700'>
 				Witaj {user ? user.name : '...'}!
 			</h1>
 
 			<div className='grid grid-cols-1 gap-6 lg:grid-cols-2'>
 				<div className='space-y-6'>
 					<div className='bg-white shadow rounded-lg p-6'>
-						<h2 className='text-lg text-gray-900 mb-4 font-bold'>Mój Dzień</h2>
+						<Link href='/my-day' className='block'>
+							<h2 className='text-lg mb-4 font-bold text-gray-900 hover:text-red-700 duration-200'>
+								Mój Dzień
+							</h2>
+						</Link>
 
 						{isLoading ? (
 							<div className='text-gray-500 text-sm'>Ładowanie zadań...</div>
 						) : (
 							<div className='space-y-3'>
-								{tasks.length === 0 && (
+								{visibleTasks.length === 0 && (
 									<p className='text-gray-500 text-sm'>Brak zadań na dziś.</p>
 								)}
 
-								{tasks.map(task => (
-									<div key={task.id} className='flex items-center space-x-2'>
-										<input
-											type='checkbox'
-											checked={task.is_completed}
-											onChange={() => toggleTaskCompletion(task)}
-											className='form-checkbox text-red-600 rounded focus:ring-red-500'
-										/>
-										<div className='flex flex-col'>
-											<span
-												className={`text-gray-900 ${
-													task.is_completed ? 'line-through text-gray-400' : ''
-												}`}>
-												{task.title}
-											</span>
-											<span className='text-xs text-gray-400'>
-												{projects.find(p => p.id === task.project_id)?.name}
-											</span>
+								{visibleTasks.map(task => (
+									<div
+										key={task.id}
+										className='group flex items-center justify-between space-x-2 p-2 hover:bg-gray-50 rounded-md transition-colors'>
+										<div className='flex items-center space-x-2'>
+											<input
+												type='checkbox'
+												checked={task.is_completed}
+												onChange={() => toggleTaskCompletion(task)}
+												className='form-checkbox text-red-600 rounded focus:ring-red-500'
+											/>
+											<div className='flex flex-col'>
+												<span
+													className={`${
+														task.is_completed
+															? 'line-through text-gray-400'
+															: 'text-gray-900'
+													}`}>
+													{task.title}
+												</span>
+												<span className='text-xs text-gray-400'>
+													{projects.find(p => p.id === task.project_id)?.name}
+												</span>
+											</div>
 										</div>
+										<button
+											onClick={() => handleDeleteTask(task.id)}
+											className='text-gray-300 hover:text-red-600 focus:outline-none opacity-0 group-hover:opacity-100 transition-all'
+											title='Usuń zadanie'>
+											<Trash2 className='w-4 h-4' />
+										</button>
 									</div>
 								))}
 
@@ -231,7 +278,7 @@ export default function DashboardPage() {
 													e.target.value === '' ? '' : Number(e.target.value)
 												)
 											}
-											className='flex-1 border-gray-300 rounded shadow-sm focus:border-red-500 focus:ring-red-500 text-base px-3 py-2 text-gray-900'>
+											className='flex-1 border-gray-300 rounded shadow-sm text-base px-3 py-2 text-gray-900'>
 											{projects.map(p => (
 												<option key={p.id} value={p.id}>
 													{p.name}
@@ -240,7 +287,7 @@ export default function DashboardPage() {
 										</select>
 										<button
 											onClick={handleAddTask}
-											className='inline-flex items-center px-4 py-2 border border-transparent rounded shadow-sm text-sm font-medium text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500'>
+											className='inline-flex items-center px-4 py-2 border border-transparent rounded shadow-sm text-sm font-bold text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500'>
 											Dodaj
 										</button>
 									</div>
@@ -250,12 +297,16 @@ export default function DashboardPage() {
 					</div>
 
 					<div className='bg-white shadow rounded-lg p-6'>
-						<h2 className='text-lg font-bold text-gray-900 mb-4'>Cele</h2>
+						<Link href='/projects-goals' className='block'>
+							<h2 className='text-lg mb-4 font-bold text-gray-900 hover:text-red-700 duration-200'>
+								Cele
+							</h2>
+						</Link>
 						{isLoading ? (
 							<p className='text-sm text-gray-500'>Ładowanie...</p>
 						) : goals.length > 0 ? (
 							<div className='grid grid-cols-3 gap-4'>
-								{goals.slice(0, 4).map(goal => (
+								{goals.map(goal => (
 									<div
 										key={goal.id}
 										className='border-2 border-gray-300 rounded p-4 flex flex-col items-center justify-center bg-gray-50'>
@@ -276,14 +327,17 @@ export default function DashboardPage() {
 					</div>
 
 					<div className='bg-white shadow rounded-lg p-6'>
-						<h2 className='text-lg font-bold text-gray-900 mb-4'>Projekty</h2>
+						<Link href='/projects-goals' className='block'>
+							<h2 className='text-lg mb-4 font-bold text-gray-900 hover:text-red-700 duration-200'>
+								Projekty
+							</h2>
+						</Link>
 						{isLoading ? (
 							<p className='text-sm text-gray-500'>Ładowanie...</p>
 						) : projects.filter(p => p.name !== 'Inbox').length > 0 ? (
 							<div className='grid grid-cols-3 gap-4'>
 								{projects
 									.filter(p => p.name !== 'Inbox')
-									.slice(0, 4)
 									.map(project => (
 										<div
 											key={project.id}
