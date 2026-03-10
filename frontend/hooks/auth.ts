@@ -27,7 +27,7 @@ export const useAuth = ({
 				}),
 		{
 			shouldRetryOnError: false,
-		}
+		},
 	);
 
 	const setToken = (token: string) => {
@@ -86,7 +86,7 @@ export const useAuth = ({
 
 		localStorage.removeItem('token');
 		mutate(null, false);
-		window.location.pathname = '/login';
+		window.location.pathname = '/~s51672/PSI/Projekt/frontend/';
 	};
 
 	useEffect(() => {

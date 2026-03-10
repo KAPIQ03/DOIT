@@ -7,25 +7,19 @@ import { goalService, Goal } from '@/services/goalService';
 import { dailyLogService, DailyLog } from '@/services/dailyLogService';
 import Link from 'next/link';
 import { ActivityCalendar } from 'react-activity-calendar';
-import {
-	LineChart,
-	Line,
-	XAxis,
-	YAxis,
-	CartesianGrid,
-	Tooltip,
-	ResponsiveContainer,
-} from 'recharts';
-import {
-	subDays,
-	format,
-	startOfYear,
-	endOfYear,
-	isSameDay,
-	parseISO,
-} from 'date-fns';
+import { subDays, format, startOfYear, endOfYear, isSameDay } from 'date-fns';
+import { parseISO } from 'date-fns/parseISO';
 import { eachDayOfInterval } from 'date-fns/eachDayOfInterval';
 import { Trash2 } from 'lucide-react';
+
+import dynamic from 'next/dynamic';
+
+const TasksChart = dynamic(() => import('@/components/TasksChart'), {
+	ssr: false,
+	loading: () => (
+		<div className='h-48 w-full bg-gray-100 animate-pulse rounded-md'></div>
+	),
+});
 
 let inboxCreationPromise: Promise<Project> | null = null;
 
@@ -193,7 +187,7 @@ export default function DashboardPage() {
 			const d = subDays(new Date(), 6 - i);
 			const dateStr = format(d, 'yyyy-MM-dd');
 			const log = dailyLogs.find(
-				l => String(l.log_date).split('T')[0] === dateStr
+				l => String(l.log_date).split('T')[0] === dateStr,
 			);
 			return {
 				name: format(d, 'dd.MM'),
@@ -275,7 +269,7 @@ export default function DashboardPage() {
 											value={selectedProjectId}
 											onChange={e =>
 												setSelectedProjectId(
-													e.target.value === '' ? '' : Number(e.target.value)
+													e.target.value === '' ? '' : Number(e.target.value),
 												)
 											}
 											className='flex-1 border-gray-300 rounded shadow-sm text-base px-3 py-2 text-gray-900'>
@@ -419,23 +413,7 @@ export default function DashboardPage() {
 							<h3 className='text-sm font-medium text-gray-500 mb-2'>
 								Ostatnie 7 dni
 							</h3>
-							<div className='h-48 w-full text-gray-700'>
-								<ResponsiveContainer width='100%' height='100%'>
-									<LineChart data={chartData}>
-										<CartesianGrid strokeDasharray='3 3' />
-										<XAxis dataKey='name' />
-										<YAxis allowDecimals={false} />
-										<Tooltip />
-										<Line
-											type='monotone'
-											dataKey='completed'
-											stroke='#dc2626'
-											activeDot={{ r: 8 }}
-											name='Ukończone zadania'
-										/>
-									</LineChart>
-								</ResponsiveContainer>
-							</div>
+							<TasksChart data={chartData} />
 						</div>
 					</div>
 				</div>

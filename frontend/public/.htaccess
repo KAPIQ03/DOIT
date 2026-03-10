@@ -1,0 +1,21 @@
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteBase /~s51672/PSI/Projekt/frontend/
+
+  # Wyłącz listowanie katalogów
+  Options -Indexes
+
+  # Główna strona
+  RewriteRule ^$ index.html [L]
+  
+  # Routing dla Next.js - najpierw sprawdź czy istnieje .html
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteCond %{REQUEST_FILENAME}.html -f
+  RewriteRule ^(.*)$ $1.html [L]
+  
+  # Fallback do index.html dla SPA routing
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteRule . index.html [L]
+</IfModule>

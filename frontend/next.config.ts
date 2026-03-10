@@ -1,14 +1,12 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-    async redirects() {
-        return [
-            {
-                source: '/',
-                destination: '/login',
-                permanent: true,
-            },
-        ];
+    output: 'export',
+
+    basePath: '/~s51672/PSI/Projekt/frontend',
+
+    images: {
+        unoptimized: true,
     },
 };
 
-export default nextConfig;
+module.exports = nextConfig;

@@ -17,8 +17,8 @@ export const metadata: Metadata = {
 	description:
 		'Aplikacja stworzona na potrzeby zaliczenia przedmiotu Projektowanie Serwisów Internetowych',
 	icons: {
-		icon: 'DOIT-sygnet.svg',
-		apple: 'DOIT-sygnet.svg',
+		icon: 'http://foka.wi.local/~s51672/PSI/Projekt/frontend/DOIT-sygnet.svg',
+		apple: 'http://foka.wi.local/~s51672/PSI/Projekt/frontend/DOIT-sygnet.svg',
 	},
 };
 

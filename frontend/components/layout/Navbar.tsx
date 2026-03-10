@@ -10,6 +10,7 @@ import {
 } from 'lucide-react';
 import { useAuth } from '@/hooks/auth';
 import Image from 'next/image';
+import logo from '@/public/DOIT.svg';
 
 export default function Navbar() {
 	const { user, logout } = useAuth();
@@ -28,12 +29,7 @@ export default function Navbar() {
 					<div className='flex'>
 						<div className='shrink-0 flex items-center'>
 							<Link href='/dashboard'>
-								<Image
-									src='DOIT.svg'
-									alt='Doit Logo'
-									width={100}
-									height={100}
-								/>
+								<Image src={logo} alt='Doit Logo' width={100} height={100} />
 							</Link>
 						</div>
 						<div className='hidden sm:ml-6 sm:flex sm:space-x-8'>

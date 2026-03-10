@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { useAuth } from '@/hooks/auth';
 import { useState } from 'react';
 import Image from 'next/image';
+import logo from '@/public/DOIT.svg';
 
 export default function LoginPage() {
 	const { login } = useAuth({
@@ -24,7 +25,7 @@ export default function LoginPage() {
 		<div className='min-h-screen bg-gray-50 flex flex-col justify-center items-center py-12 sm:px-6 lg:px-8 '>
 			<div className='sm:mx-auto sm:w-full sm:max-w-md'>
 				<Image
-					src='DOIT.svg'
+					src={logo}
 					alt='Doit Logo'
 					width={200}
 					height={200}
